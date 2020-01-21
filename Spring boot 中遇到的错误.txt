@@ -1,0 +1,139 @@
+Maven与spring boot版本不兼容问题pom.xml第一行报错 解决方法如下 在<properties>中加入<maven-jar-plugin.version>3.1.1</maven-jar-plugin.version>
+或者 降低spring boot版本到2.0以下
+<properties>
+		<java.version>1.8</java.version>
+		<maven-jar-plugin.version>3.1.1</maven-jar-plugin.version>
+</properties>
+为项目添加eclipse对应的Junit库即可，具体步骤如下：
+
+在包资源管理器中右键单击您的项目
+build path
+configure build path
+libraries-->add libraries-->junit
+
+时间类型为date 不是data 打错..真特么傻逼
+
+http://localhost:8081/boot/webjars/jquery/3.4.1/jquery.js
+
+终端中不能够使用git命令 原因 没有配置系统的环境变量
+git init 可以吧当前的文件初始化为git仓库
+
+idea Ctrl shift n 查找一个文件
+
+git init 的功能为初始化一个文件夹为本地仓库
+然后使用git status查看状态和是否存在.git文件
+仓库分为工作区 暂存区 提交区，文件夹即是工作区，现在我们新建一个空文件并使用git add <文件名>把它添加到暂存区
+git commit -m "init repo"，最后我们使用git commit -m "注释"把它提交到版本库：
+使用git status 查看工作区，会发现变干净了
+
+创建远程仓库地址的别名git remote add origin https://github.com/lin0130/community.git
+git push -u origin master
+
+git commit --amend --no-edit
+假设你创建了一个文件，并写入了一些内容，然后通过git add和git commit将此变更提交。提交之后才发现这个文件中少了一些内容，此时有两个选择摆在你面前：
+
+将文件内容补全，然后和之前一样git add、git commit。显然，你可以通过git log看到这两条commit记录。
+
+回到过去，修改上一次提交的那个文件。如此一来，你的commit记录只会有一条。对于一些有代码洁癖并且看中git commit记录的程序员，这点很重要，特别是在开源项目中。
+idea中 重命名快捷键 shift f6
+
+Ctrl shift f12 全屏缩放
+Ctrl alt L 快速整理代码
+Alt 鼠标左键下拉 可以一次修改多行同一个位置
+ctrl +鼠标最左最右 光标至左和右
+alt + insert 快速生成set 和 get 方法
+alt + 回车 快速引入包
+Ctrl alt v 快速创建变量
+shift + 回车 任意换行
+Ctrl alt + n 多行合并成一行
+Ctrl e 切换最近的一个编辑窗口
+Ctrl alt + o 自动移除没有应用的包
+shift + f6 修改多个同一属性名
+注册GitHub APP
+github ->settings->Developer settings->new githubApp
+
+Github App 可以免去用户在第三方页面输入账号密码或者 Token 的操作而完成授权，那么它是怎么做到的呢？其实说白了，它也是一种 OAuth 登录的方式，只不过把获取 Token 的方式从“用户输入”变成“由 Github 提供”。
+
+下面介绍这种登录方式的流程：
+
+A 网站跳转到 Github 的授权页面。
+Github 授权页面询问用户：“是否允许A网站获取下列权限”，用户点击“允许”，取得授权码。
+Github 授权页面重定向回 A 网站，同时在URL 上带上授权码。
+A 网站通过 URL 上的授权码往 Github 取回 Token。
+A 网站使用这个 Token 去调用 Github API。
+要完成上述的流程，首先必须先注册一个 Github App。
+
+
+redirect_uri	string	应用程序中用户将在授权后被发送的URL。
+
+实现post  OKHttp
+public static final MediaType JSON
+    = MediaType.get("application/json; charset=utf-8");
+
+OkHttpClient client = new OkHttpClient();
+
+String post(String url, String json) throws IOException {
+  RequestBody body = RequestBody.create(json, JSON);
+  Request request = new Request.Builder()
+      .url(url)
+      .post(body)
+      .build();
+  try (Response response = client.newCall(request).execute()) {
+    return response.body().string();
+  }
+}
+
+参数超过俩个以上把它封装成一个对象去做
+http://mvnrepository.com  国外比较全的一个maven库
+
+Inspects a Maven model for resolution problems.
+第一步：右击项目-maven-download source and documention
+第二步：等待下载完成后，在Maven面板里依次双击intall
+
+https://api.github.com/user?access_token=b98c0f06eb665783da04bb4e54d650e8c39c4060
+
+数据传输对象（DTO)(Data Transfer Object)，是一种设计模式之间传输数据的软件
+应用系统。数据传输目标往往是数据访问对象从数据库中检索数据。数据传输对象与数据交互
+对象或数据访问对象之间的差异是一个以不具有任何行为除了存储和检索的数据（访问和存取器）
+
+idea 点击运行时 没有反应 然后运行按钮变灰 可能是引入的方法有问题（方法画单根删除横线，可能是引入依赖的maven版本问题）
+
+@RequestParam：将请求参数绑定到你控制器的方法参数上（是springmvc中接收普通参数的注解）
+语法：@RequestParam(value=”参数名”,required=”true/false”,defaultValue=””)
+value：参数名
+required：是否包含该参数，默认为true，表示该请求路径中必须包含该参数，如果不包含就报错。
+defaultValue：默认参数值，如果设置了该值，required=true将失效，自动为false,如果没有传该参数，就使用默认值
+
+client_id 是应用的唯一标识，平台通过 client_id 来鉴别应用的身份。client_secret 是平台给应用分配的密钥，开发者需要
+妥善保存这个密钥，这个密钥用来保证应用来源的可靠性，防止被伪造。 client_id 和 client_secret 是开发者的应用发起有赞 Oauth
+ 授权的凭证。 应用创建完成（工具型应用还需要审核）会自动分配一份对应的 client_id 和 client_secret，然后才能发起 Oauth 授权请求
+。 一个开发者可以有多个应用
+session 和 cookie
+会话，指用户登录网站后的一系列动作，比如浏览商品添加到购物车并购买。会话（Session）跟踪是W
+eb程序中常用的技术，用来跟踪用户的整个会话。常用的会话跟踪技术 是Cookie与Session。Cookie通过在客户端
+记录信息确定用户身份，Session通过在服务器端记录信息确定用户身份
+https://blog.csdn.net/sunhuaqiang1/article/details/88656617
+<html xmlns:th="http://www.thymeleaf.org">
+th:if="${}" 控制HTML输出
+h2数据库 依赖
+<!-- https://mvnrepository.com/artifact/com.h2database/h2 -->
+<dependency>
+    <groupId>com.h2database</groupId>
+    <artifactId>h2</artifactId>
+    <version>1.4.199</version>
+    <scope>test</scope>
+</dependency>
+idea windows 创建 h2 数据库
++ -> data Source from Path
+spring boot 整合mybatis 
+配置文件
+spring.datasource.url=jdbc:mysql://localhost/test
+spring.datasource.username=wuxin
+spring.datasource.password=123456
+spring.datasource.driver-class-name=org.h2.Driver
+maven依赖
+<dependency>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-jdbc</artifactId>
+</dependency>
+写Mapper
