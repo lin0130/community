@@ -1,9 +1,10 @@
-package lin.community.communtiy.model;
+package lin.community.communtiy.dto;
 
+import lin.community.communtiy.model.User;
 import lombok.Data;
 
 @Data
-public class Question {
+public class QuestionDto {
     private Integer id;
     private String title;
     private String description;
@@ -14,6 +15,5 @@ public class Question {
     private Integer commentcount;
     private Integer likecount;
     private Integer viewcount;
-
-
+    private User user;
 }
