@@ -1,6 +1,6 @@
 package lin.community.communtiy.dto;
 
-public class AccessTokenDto {
+public class AccessTokenDTO {
     private String client_id;
     private String redirect_uri;
     private String client_secret;

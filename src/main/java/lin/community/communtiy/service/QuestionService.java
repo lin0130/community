@@ -1,6 +1,7 @@
 package lin.community.communtiy.service;
 
-import lin.community.communtiy.dto.QuestionDto;
+import lin.community.communtiy.dto.PaginationDTO;
+import lin.community.communtiy.dto.QuestionDTO;
 import lin.community.communtiy.mapper.QuestionMapper;
 import lin.community.communtiy.mapper.UserMapper;
 import lin.community.communtiy.model.Question;
@@ -18,16 +19,33 @@ public class QuestionService {
     private UserMapper userMapper;
     @Autowired
     private QuestionMapper questionMapper;
-    public List<QuestionDto> list() {
-        List<Question> questions = questionMapper.list();
-        List<QuestionDto> questionDtoList = new ArrayList<>();
+
+    public PaginationDTO list(Integer page, Integer size) {
+
+        PaginationDTO paginationDTO = new PaginationDTO();
+        Integer totalCount = questionMapper.count();
+        paginationDTO.setPagination(totalCount, page, size);
+
+        if (page < 1) {
+            page = 1;
+        }
+        if (page > paginationDTO.getTotalPage()) {
+            page = paginationDTO.getTotalPage();
+        }
+
+        Integer offset = size * (page - 1);
+        List<Question> questions = questionMapper.list(offset, size);
+        List<QuestionDTO> questionDtoList = new ArrayList<>();
+
         for (Question question : questions) {
             User user = userMapper.findById(question.getCreator());
-            QuestionDto questionDto = new QuestionDto();
-            BeanUtils.copyProperties(question,questionDto);//把question中的属性快速copy到questionDto中
+            QuestionDTO questionDto = new QuestionDTO();
+            BeanUtils.copyProperties(question, questionDto);//把question中的属性快速copy到questionDto中
             questionDto.setUser(user);
             questionDtoList.add(questionDto);
         }
-        return questionDtoList;
+
+        paginationDTO.setQuestionDtos(questionDtoList);
+        return paginationDTO;
     }
 }

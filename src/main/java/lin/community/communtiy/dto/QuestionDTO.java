@@ -4,7 +4,7 @@ import lin.community.communtiy.model.User;
 import lombok.Data;
 
 @Data
-public class QuestionDto {
+public class QuestionDTO {
     private Integer id;
     private String title;
     private String description;

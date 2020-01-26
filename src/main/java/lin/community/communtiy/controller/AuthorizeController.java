@@ -1,14 +1,10 @@
 package lin.community.communtiy.controller;
 
-import com.alibaba.fastjson.JSON;
-import lin.community.communtiy.dto.AccessTokenDto;
+import lin.community.communtiy.dto.AccessTokenDTO;
 import lin.community.communtiy.dto.GithubUser;
 import lin.community.communtiy.mapper.UserMapper;
 import lin.community.communtiy.model.User;
 import lin.community.communtiy.provider.GithubProvider;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -18,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.util.UUID;
 
 @Controller
@@ -39,13 +34,13 @@ public class AuthorizeController {
                            HttpServletRequest servletRequest,
                            HttpServletResponse servletResponse)
     {
-        AccessTokenDto accessTokenDto = new AccessTokenDto();
-        accessTokenDto.setClient_id("1aedee186d31295e9563");
-        accessTokenDto.setRedirect_uri("http://localhost:8082/callback");
-        accessTokenDto.setCode(code);
-        accessTokenDto.setState(state);
-        accessTokenDto.setClient_secret("aed100222119bbf6c545728e2fe9e7646640fc82");
-        String accessToken = githubProvider.getAccessToken(accessTokenDto);
+        AccessTokenDTO accessTokenDTO = new AccessTokenDTO();
+        accessTokenDTO.setClient_id("1aedee186d31295e9563");
+        accessTokenDTO.setRedirect_uri("http://localhost:8082/callback");
+        accessTokenDTO.setCode(code);
+        accessTokenDTO.setState(state);
+        accessTokenDTO.setClient_secret("aed100222119bbf6c545728e2fe9e7646640fc82");
+        String accessToken = githubProvider.getAccessToken(accessTokenDTO);
         GithubUser githubUser = githubProvider.getUser(accessToken);
 
         if (githubUser != null && githubUser.getId() != null) {
