@@ -2,9 +2,9 @@ package lin.community.communtiy.controller;
 
 import lin.community.communtiy.dto.AccessTokenDTO;
 import lin.community.communtiy.dto.GithubUser;
-import lin.community.communtiy.mapper.UserMapper;
 import lin.community.communtiy.model.User;
 import lin.community.communtiy.provider.GithubProvider;
+import lin.community.communtiy.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -19,6 +19,8 @@ import java.util.UUID;
 @Controller
 public class AuthorizeController {
     @Autowired
+    private UserService userService;
+    @Autowired
     private GithubProvider githubProvider;
     @Value("${github.clien.id}")
     private String client_id;
@@ -26,14 +28,12 @@ public class AuthorizeController {
     private String Redirect_uri;
     @Value("${github.client.secret}")
     private String client_secret;
-    @Autowired
-    private UserMapper userMapper;
+
     @GetMapping("/callback")
-    public String callback(@RequestParam(name = "code")String code,
-                           @RequestParam(name = "state")String state,
+    public String callback(@RequestParam(name = "code") String code,
+                           @RequestParam(name = "state") String state,
                            HttpServletRequest servletRequest,
-                           HttpServletResponse servletResponse)
-    {
+                           HttpServletResponse servletResponse) {
         AccessTokenDTO accessTokenDTO = new AccessTokenDTO();
         accessTokenDTO.setClient_id("1aedee186d31295e9563");
         accessTokenDTO.setRedirect_uri("http://localhost:8082/callback");
@@ -52,13 +52,23 @@ public class AuthorizeController {
             user.setGmtCreate(System.currentTimeMillis());
             user.setGmtModified(user.getGmtCreate());
             user.setAvatarurl(githubUser.getAvatarUrl());
-            userMapper.insert(user);
-            servletResponse.addCookie(new Cookie("token",token));
+            userService.CreateOrUpdate(user);
+            servletResponse.addCookie(new Cookie("token", token));
 
             return "redirect:/";
-        }else {
-            return  "redirect:/";
+        } else {
+            return "redirect:/";
         }
+    }
+
+    @GetMapping("/logout")
+    public String logout(HttpServletRequest servletRequest,
+                         HttpServletResponse servletResponse) {
+        servletRequest.getSession().removeAttribute("user");
+        Cookie cookie = new Cookie("token",null);
+        cookie.setMaxAge(0);
+        servletResponse.addCookie(cookie);
+        return "redirect:/";
     }
 
 }
