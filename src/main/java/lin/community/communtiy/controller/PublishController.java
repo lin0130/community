@@ -1,12 +1,14 @@
 package lin.community.communtiy.controller;
 
-import lin.community.communtiy.mapper.QuestionMapper;
+import lin.community.communtiy.dto.QuestionDTO;
 import lin.community.communtiy.model.Question;
 import lin.community.communtiy.model.User;
+import lin.community.communtiy.service.QuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -16,7 +18,19 @@ import javax.servlet.http.HttpServletRequest;
 public class PublishController {
 
     @Autowired
-    private QuestionMapper questionMapper;
+    private QuestionService questionService;
+
+    @GetMapping("/publish/{id}")
+    String edit(@PathVariable (name = "id") Integer id,
+                Model model)
+    {
+        QuestionDTO question = questionService.getById(id);
+        model.addAttribute("title", question.getTitle());
+        model.addAttribute("description", question.getDescription());
+        model.addAttribute("tag", question.getTag());
+        model.addAttribute("id",question.getId());
+        return "publish";
+    }
 
     @GetMapping("/publish")
     String publish() {
@@ -28,6 +42,7 @@ public class PublishController {
             @RequestParam("title") String title,
             @RequestParam("description") String description,
             @RequestParam("tag") String tag,
+            @RequestParam("id") Integer id,
             HttpServletRequest servletRequest,
             Model model
     ) {
@@ -57,9 +72,8 @@ public class PublishController {
         question.setTag(tag);
         question.setDescription(description);
         question.setCreator(user.getId());
-        question.setGmtcreate(System.currentTimeMillis());
-        question.setGmtmodified(question.getGmtcreate());
-        questionMapper.create(question);
+        question.setId(id);
+        questionService.createOrUpdate(question);
         return "redirect:/";
     }
 }

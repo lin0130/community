@@ -99,4 +99,18 @@ public class QuestionService {
         questionDTO.setUser(user);
         return questionDTO;
     }
+
+    public void createOrUpdate(Question question) {
+        if (question.getId()==null)
+        {
+            question.setGmtcreate(System.currentTimeMillis());
+            question.setGmtmodified(question.getGmtcreate());
+            questionMapper.create(question);
+        }else
+        {
+            question.setGmtmodified(question.getGmtcreate());
+            questionMapper.update(question);
+
+        }
+    }
 }
