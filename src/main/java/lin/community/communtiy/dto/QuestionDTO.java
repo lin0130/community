@@ -9,11 +9,11 @@ public class QuestionDTO {
     private String title;
     private String description;
     private String tag;
-    private Long gmtcreate;
-    private Long gmtmodified;
+    private Long gmtCreate;
+    private Long gmtModified;
     private Integer creator;
-    private Integer commentcount;
-    private Integer likecount;
-    private Integer viewcount;
+    private Integer commentCount;
+    private Integer likeCount;
+    private Integer viewCount;
     private User user;
 }

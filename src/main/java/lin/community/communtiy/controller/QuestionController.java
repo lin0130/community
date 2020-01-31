@@ -17,7 +17,10 @@ public class QuestionController {
                            Model model)
     {
         QuestionDTO questionDTO = questionService.getById(id);
+        questionService.inView(id);
         model.addAttribute("question",questionDTO);
         return "question";
     }
+
+
 }
