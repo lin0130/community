@@ -11,6 +11,7 @@ import java.util.List;
 
 @Repository
 @Mapper
-public interface QuestionEtcMapper {
+public interface QuestionExtMapper {
     int incView(Question record);
+    int incCommentCount(Question record);
 }

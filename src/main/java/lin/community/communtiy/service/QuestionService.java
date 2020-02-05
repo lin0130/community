@@ -4,7 +4,7 @@ import lin.community.communtiy.dto.PaginationDTO;
 import lin.community.communtiy.dto.QuestionDTO;
 import lin.community.communtiy.exception.CustomizeErrorCode;
 import lin.community.communtiy.exception.CustomizeException;
-import lin.community.communtiy.mapper.QuestionEtcMapper;
+import lin.community.communtiy.mapper.QuestionExtMapper;
 import lin.community.communtiy.mapper.QuestionMapper;
 import lin.community.communtiy.mapper.UserMapper;
 import lin.community.communtiy.model.Question;
@@ -21,7 +21,7 @@ import java.util.List;
 @Service
 public class QuestionService {
     @Autowired
-    private QuestionEtcMapper questionEtcMapper;
+    private QuestionExtMapper questionEtcMapper;
     @Autowired
     private UserMapper userMapper;
     @Autowired
@@ -64,7 +64,7 @@ public class QuestionService {
         return paginationDTO;
     }
 
-    public PaginationDTO list(Integer userId, Integer page, Integer size) {
+    public PaginationDTO list(Long userId, Integer page, Integer size) {
         PaginationDTO paginationDTO = new PaginationDTO();
         Integer totalPage;
         QuestionExample questionExample = new QuestionExample();
@@ -105,7 +105,7 @@ public class QuestionService {
         return paginationDTO;
     }
 
-    public QuestionDTO getById(Integer id) {
+    public QuestionDTO getById(Long id) {
         Question question = questionMapper.selectByPrimaryKey(id);
         if (question==null)
         {
@@ -121,8 +121,12 @@ public class QuestionService {
     public void createOrUpdate(Question question) {
         if (question.getId()==null)
         {
+//            question.setId(10000l);
             question.setGmtCreate(System.currentTimeMillis());
             question.setGmtModified(question.getGmtCreate());
+            question.setViewCount(0);
+            question.setCommentCount(0);
+            question.setLikeCount(0);
             questionMapper.insert(question);
         }else
         {
@@ -143,7 +147,7 @@ public class QuestionService {
         }
     }
 
-    public void inView(Integer id) {
+    public void inView(Long id) {
         Question question = new Question();
         question.setId(id);
         question.setViewCount(1);
