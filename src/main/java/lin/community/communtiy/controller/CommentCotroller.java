@@ -1,20 +1,21 @@
 package lin.community.communtiy.controller;
 
 import lin.community.communtiy.dto.CommentCreateDTO;
+import lin.community.communtiy.dto.CommentDTO;
 import lin.community.communtiy.dto.ResultDTO;
+import lin.community.communtiy.enums.CommentTypeEnum;
 import lin.community.communtiy.exception.CustomizeErrorCode;
 import lin.community.communtiy.mapper.CommentMapper;
 import lin.community.communtiy.model.Comment;
 import lin.community.communtiy.model.User;
 import lin.community.communtiy.service.CommentService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 @Controller
 public class CommentCotroller {
@@ -34,6 +35,10 @@ public class CommentCotroller {
         {
             return ResultDTO.errorOf(CustomizeErrorCode.NO_LOGIN);
         }
+        if (commentCreateDTO ==null || StringUtils.isBlank(commentCreateDTO.getContent()))
+        {
+            return ResultDTO.errorOf(CustomizeErrorCode.CONTENT_IS_EMPTY);
+        }
         Comment comment = new Comment();
         comment.setParentId(commentCreateDTO.getParentId());
         comment.setCommentor(user.getId());
@@ -44,6 +49,14 @@ public class CommentCotroller {
         comment.setLikeCount(0);
         commentService.insert(comment);
         return ResultDTO.okOf();
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/comment/{id}" , method = RequestMethod.GET)
+    public ResultDTO<List<CommentDTO>> comments(@PathVariable(name = "id")Long id)
+    {
+        List<CommentDTO> commentDTOS = commentService.listByTargetId(id, CommentTypeEnum.COMMENT);
+        return ResultDTO.okOf(commentDTOS);
     }
 
 }

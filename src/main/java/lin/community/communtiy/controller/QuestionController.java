@@ -1,8 +1,8 @@
 package lin.community.communtiy.controller;
 
-import lin.community.communtiy.dto.CommentCreateDTO;
 import lin.community.communtiy.dto.CommentDTO;
 import lin.community.communtiy.dto.QuestionDTO;
+import lin.community.communtiy.enums.CommentTypeEnum;
 import lin.community.communtiy.service.CommentService;
 import lin.community.communtiy.service.QuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,10 +25,12 @@ public class QuestionController {
                            Model model)
     {
         QuestionDTO questionDTO = questionService.getById(id);
-        List<CommentDTO> commentDTOS = commentService.listByQuestionId(id);
+        List<QuestionDTO> relatedQuestions = questionService.selectRelated(questionDTO);
+        List<CommentDTO> commentDTOS = commentService.listByTargetId(id, CommentTypeEnum.QUESTION);
         questionService.inView(id);
         model.addAttribute("question",questionDTO);
         model.addAttribute("comments",commentDTOS);
+        model.addAttribute("relatedQuestions",relatedQuestions);
         return "question";
     }
 
