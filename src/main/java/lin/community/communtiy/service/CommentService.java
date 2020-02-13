@@ -2,6 +2,8 @@ package lin.community.communtiy.service;
 
 import lin.community.communtiy.dto.CommentDTO;
 import lin.community.communtiy.enums.CommentTypeEnum;
+import lin.community.communtiy.enums.NotificationStatusEnum;
+import lin.community.communtiy.enums.NotificationTypeEnum;
 import lin.community.communtiy.exception.CustomizeErrorCode;
 import lin.community.communtiy.exception.CustomizeException;
 import lin.community.communtiy.mapper.*;
@@ -34,8 +36,12 @@ public class CommentService {
 
     @Autowired
     private CommentExtMapper commentExtMapper;
+
+    @Autowired
+    private NotificationMapper notificationMapper;
+
     @Transactional//将下面的方法体增加为一个事务
-    public void insert(Comment comment) {
+    public void insert(Comment comment, User commentor) {
         if (comment.getParentId() == null || comment.getParentId() == 0) {
             throw new CustomizeException(CustomizeErrorCode.TARGET_PARAM_NOT_FOUND);
         }
@@ -49,6 +55,11 @@ public class CommentService {
                 throw new CustomizeException(CustomizeErrorCode.COMMENT_NOT_FOUND);
             }
 
+            //回复问题
+            Question question = questionMapper.selectByPrimaryKey(dbComment.getParentId());
+            if (question == null) {
+                throw new CustomizeException(CustomizeErrorCode.QUESTION_NOT_FOUND);
+            }
             commentMapper.insert(comment);
 
             //增加评论数
@@ -56,6 +67,8 @@ public class CommentService {
             parentComment.setId(comment.getParentId());
             parentComment.setCommentCount(1);
             commentExtMapper.incCommentCount(parentComment);
+            //创建通知
+            creatNodify(comment, dbComment.getCommentor(),commentor.getName(), question.getTitle(), NotificationTypeEnum.REPLY_COMMENT, question.getId());
         } else {
             //回复问题
             Question question = questionMapper.selectByPrimaryKey(comment.getParentId());
@@ -65,7 +78,22 @@ public class CommentService {
             commentMapper.insert(comment);
             question.setCommentCount(1);
             questionExtMapper.incCommentCount(question);
+            //创建通知 
+            creatNodify(comment, question.getCreator(), commentor.getName(),question.getTitle(), NotificationTypeEnum.REPLY_COMMENT.REPLY_QUESTION, question.getId());
         }
+    }
+
+    private void creatNodify(Comment comment, Long recevier, String notifierName, String outerTitle, NotificationTypeEnum notificationType, Long outerId) {
+        Notification notification = new Notification();
+        notification.setGmtCreate(System.currentTimeMillis());
+        notification.setType(notificationType.getType());
+        notification.setOuterid(outerId);
+        notification.setNotifier(comment.getCommentor());
+        notification.setStatus(NotificationStatusEnum.UNREAD.getStatus());
+        notification.setReciver(recevier);
+        notification.setNotifierName(notifierName);
+        notification.setOuterTitle(outerTitle);
+        notificationMapper.insert(notification);
     }
 
     public List<CommentDTO> listByTargetId(Long id, CommentTypeEnum type) {
@@ -76,8 +104,7 @@ public class CommentService {
         commentExample.setOrderByClause("gmt_create desc");
         List<Comment> comments = commentMapper.selectByExample(commentExample);
 
-        if (comments.size()==0)
-        {
+        if (comments.size() == 0) {
             return new ArrayList<>();
         }
 
