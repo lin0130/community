@@ -10,6 +10,10 @@
     <script src="/js/bootstrap.min.js" type="application/javascript"></script>
     <link rel="stylesheet" href="/css/communtiy.css">
     <script src="/js/moment.js"></script>
+    <script src="/js/editormd.min.js" type="application/javascript"></script>
+    <script src="/js/lib/marked.min.js"></script>
+    <script src="/js/lib/prettify.min.js"></script>
+    <link rel="stylesheet" href="/css/editormd.preview.min.css">
 
 </head>
 <body>
@@ -28,7 +32,14 @@
             </span>
                 <hr class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                 <!--内容-->
-                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" th:text="${question.description}"></div>
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" id="question-view">
+                    <textarea style="display: none"  th:text="${question.description}"></textarea>
+                </div>
+                <script type="text/javascript">
+                    $(function () {
+                        editormd.markdownToHTML("question-view",{})
+                    });
+                </script>
                 <!--标签-->
                 <hr class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
@@ -102,12 +113,12 @@
                     <div class="media">
                         <div class="media-left">
                             <a href="#">
-                                <img class="media-object img-rounded" th:src="${question.user.avatarUrl}" alt="...">
+                                <img class="media-object img-rounded" th:src="${session.user!=null?session.user.avatarUrl:'/images/default-avatar.png'}" alt="...">
                             </a>
                         </div>
                         <div class="media-body">
                             <h4 class="media-heading">
-                                <span th:text="${question.user.name}"></span>
+                                <span th:text="${session.user!=null?session.user.name:'匿名用户'}"></span>
                             </h4>
                         </div>
                     </div>
@@ -140,7 +151,7 @@
             <hr class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                 <h4>关注我</h4>
-                <img class="img-thumbnail question-wechat" src="/img/1.jpg" alt="">
+                <img class="img-thumbnail question-wechat" src="/images/1.jpg" alt="">
             </div>
 
             <!--相关问题-->
@@ -157,5 +168,7 @@
         </div>
     </div>
 </div>
+<div th:insert="~{footer::foot}"></div>
+
 </body>
 </html>

@@ -2,6 +2,7 @@ package lin.community.communtiy.service;
 
 import lin.community.communtiy.dto.PaginationDTO;
 import lin.community.communtiy.dto.QuestionDTO;
+import lin.community.communtiy.dto.QuestionQueryDTO;
 import lin.community.communtiy.exception.CustomizeErrorCode;
 import lin.community.communtiy.exception.CustomizeException;
 import lin.community.communtiy.mapper.QuestionExtMapper;
@@ -19,7 +20,6 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,11 +31,17 @@ public class QuestionService {
     @Autowired
     private QuestionMapper questionMapper;
 
-    public PaginationDTO list(Integer page, Integer size) {
+    public PaginationDTO list(String search, Integer page, Integer size) {
+        if (StringUtils.isNotBlank(search)) {
+            String[] tags = StringUtils.split(search, " ");
+            search = Arrays.stream(tags).collect(Collectors.joining("|"));
+        }
 
         PaginationDTO paginationDTO = new PaginationDTO();
         Integer totalPage;
-        Integer totalCount = (int)questionMapper.countByExample(new QuestionExample());
+        QuestionQueryDTO questionQueryDTO = new QuestionQueryDTO();
+        questionQueryDTO.setSearch(search);
+        Integer totalCount = questionEtcMapper.countBySearch(questionQueryDTO);
 
         if (totalCount % size == 0) {
             totalPage = totalCount / size;
@@ -46,8 +52,8 @@ public class QuestionService {
         if (page < 1) {
             page = 1;
         }
-        if (page >totalPage) {
-            page =totalPage;
+        if (page > totalPage) {
+            page = totalPage;
         }
         paginationDTO.setPagination(totalPage, page);
 
@@ -55,7 +61,9 @@ public class QuestionService {
 
         QuestionExample questionExample = new QuestionExample();
         questionExample.setOrderByClause("gmt_create desc");
-        List<Question> questions = questionMapper.selectByExampleWithRowbounds(questionExample, new RowBounds(offset, size));
+        questionQueryDTO.setPage(offset);
+        questionQueryDTO.setSize(size);
+        List<Question> questions = questionEtcMapper.selectBySearch(questionQueryDTO);
         List<QuestionDTO> questionDtoList = new ArrayList<>();
 
         for (Question question : questions) {
@@ -76,7 +84,7 @@ public class QuestionService {
         QuestionExample questionExample = new QuestionExample();
         questionExample.createCriteria()
                 .andCreatorEqualTo(userId);
-        Integer totalCount = (int)questionMapper.countByExample(questionExample);
+        Integer totalCount = (int) questionMapper.countByExample(questionExample);
         if (totalCount % size == 0) {
             totalPage = totalCount / size;
         } else {
@@ -86,8 +94,8 @@ public class QuestionService {
         if (page < 1) {
             page = 1;
         }
-        if (page >totalPage) {
-            page =totalPage;
+        if (page > totalPage) {
+            page = totalPage;
         }
         paginationDTO.setPagination(totalPage, page);
 
@@ -113,8 +121,7 @@ public class QuestionService {
 
     public QuestionDTO getById(Long id) {
         Question question = questionMapper.selectByPrimaryKey(id);
-        if (question==null)
-        {
+        if (question == null) {
             throw new CustomizeException(CustomizeErrorCode.QUESTION_NOT_FOUND);
         }
         QuestionDTO questionDTO = new QuestionDTO();
@@ -125,8 +132,7 @@ public class QuestionService {
     }
 
     public void createOrUpdate(Question question) {
-        if (question.getId()==null)
-        {
+        if (question.getId() == null) {
 //            question.setId(10000l);
             question.setGmtCreate(System.currentTimeMillis());
             question.setGmtModified(question.getGmtCreate());
@@ -134,8 +140,7 @@ public class QuestionService {
             question.setCommentCount(0);
             question.setLikeCount(0);
             questionMapper.insert(question);
-        }else
-        {
+        } else {
             Question updateQuestion = new Question();
             updateQuestion.setGmtModified(System.currentTimeMillis());
             updateQuestion.setTitle(question.getTitle());
@@ -145,8 +150,7 @@ public class QuestionService {
             example.createCriteria()
                     .andIdEqualTo(question.getId());
             int update = questionMapper.updateByExampleSelective(updateQuestion, example);
-            if (update !=1)
-            {
+            if (update != 1) {
                 throw new CustomizeException(CustomizeErrorCode.QUESTION_NOT_FOUND);
             }
 
@@ -161,8 +165,7 @@ public class QuestionService {
     }
 
     public List<QuestionDTO> selectRelated(QuestionDTO queryDTO) {
-        if (StringUtils.isBlank(queryDTO.getTag()))
-        {
+        if (StringUtils.isBlank(queryDTO.getTag())) {
             return new ArrayList<>();
         }
         String[] tags = StringUtils.split(queryDTO.getTag(), ",");
@@ -172,9 +175,9 @@ public class QuestionService {
         question.setTag(regexpTag);
 
         List<Question> questions = questionEtcMapper.selectRelated(question);
-        List<QuestionDTO> questionDTOS = questions.stream().map(q ->{
+        List<QuestionDTO> questionDTOS = questions.stream().map(q -> {
             QuestionDTO questionDTO = new QuestionDTO();
-            BeanUtils.copyProperties(q,questionDTO);
+            BeanUtils.copyProperties(q, questionDTO);
             return questionDTO;
         }).collect(Collectors.toList());
         return questionDTOS;

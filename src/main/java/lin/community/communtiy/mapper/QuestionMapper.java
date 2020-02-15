@@ -1,6 +1,8 @@
 package lin.community.communtiy.mapper;
 
 import java.util.List;
+
+import lin.community.communtiy.dto.QuestionDTO;
 import lin.community.communtiy.model.Question;
 import lin.community.communtiy.model.QuestionExample;
 import org.apache.ibatis.annotations.Param;
@@ -134,4 +136,6 @@ public interface QuestionMapper {
      * @mbg.generated Thu Feb 13 15:15:37 CST 2020
      */
     int updateByPrimaryKey(Question record);
+
+    Integer countBySearch(QuestionDTO questionDTO);
 }
