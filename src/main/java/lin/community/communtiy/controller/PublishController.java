@@ -1,6 +1,6 @@
 package lin.community.communtiy.controller;
 
-import Cache.TagCache;
+import lin.community.communtiy.Cache.TagCache;
 import lin.community.communtiy.dto.QuestionDTO;
 import lin.community.communtiy.model.Question;
 import lin.community.communtiy.model.User;

@@ -32,6 +32,7 @@ public class NotificationService {
         NotificationExample notificationExample = new NotificationExample();
         notificationExample.createCriteria()
                 .andReciverEqualTo(userId);
+        
         Integer totalCount = (int) notificationMapper.countByExample(notificationExample);
         if (totalCount % size == 0) {
             totalPage = totalCount / size;
@@ -66,8 +67,6 @@ public class NotificationService {
             notificationDTO.setTypeName(NotificationTypeEnum.nameOfType(notification.getType()));
             notificationDTOS.add(notificationDTO);
         }
-
-
 
         paginationDTO.setData(notificationDTOS);
         return paginationDTO;

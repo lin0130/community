@@ -19,8 +19,6 @@ import java.util.List;
 
 @Controller
 public class CommentCotroller {
-    @Autowired
-    private CommentMapper commentMapper;
 
     @Autowired
     private CommentService commentService;

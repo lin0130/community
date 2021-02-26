@@ -1,5 +1,8 @@
 package lin.community.communtiy.model;
 
+import lombok.Data;
+
+@Data
 public class User {
     /**
      *
@@ -8,6 +11,7 @@ public class User {
      *
      * @mbg.generated Thu Feb 13 15:15:37 CST 2020
      */
+    private String passWord;
     private Long id;
 
     /**

@@ -149,10 +149,10 @@
     -->
     insert into USER (ID, ACCOUNT_ID, NAME, 
       TOKEN, GMT_CREATE, GMT_MODIFIED, 
-      AVATAR_URL)
+      AVATAR_URL,PASSWORD)
     values (#{id,jdbcType=BIGINT}, #{accountId,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, 
       #{token,jdbcType=CHAR}, #{gmtCreate,jdbcType=BIGINT}, #{gmtModified,jdbcType=BIGINT}, 
-      #{avatarUrl,jdbcType=VARCHAR})
+      #{avatarUrl,jdbcType=VARCHAR},#{passWord,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="lin.community.communtiy.model.User">
     <!--

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="${lives.city}" th:each="lives:${cityWeather.lives}"></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <link rel="stylesheet" href="/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="/css/bootstrap-theme.min.css">
+    <script src="/js/jquery-3.4.1.min.js"></script>
+    <script src="/js/bootstrap.min.js" type="application/javascript"></script>
+    <link rel="stylesheet" href="/css/communtiy.css">
+</head>
+<body>
+<div th:insert="~{navigation::nav}"></div>
+<div th:each="lives:${cityWeather.lives}">
+    省份：<span th:text="${lives.province}"></span><br>
+    城市：<span th:text="${lives.city}"></span><br>
+    温度：<span th:text="${lives.temperature}"></span><br>
+    天气：<span th:text="${lives.weather}"></span><br>
+    风力：<span th:text="${lives.windpower}"></span><br>
+</div>
+</body>
+</html>

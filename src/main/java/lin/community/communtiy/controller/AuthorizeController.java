@@ -1,5 +1,4 @@
 package lin.community.communtiy.controller;
-
 import lin.community.communtiy.dto.AccessTokenDTO;
 import lin.community.communtiy.dto.GithubUser;
 import lin.community.communtiy.model.User;
@@ -32,7 +31,6 @@ public class AuthorizeController {
     @GetMapping("/callback")
     public String callback(@RequestParam(name = "code") String code,
                            @RequestParam(name = "state") String state,
-                           HttpServletRequest servletRequest,
                            HttpServletResponse servletResponse) {
         AccessTokenDTO accessTokenDTO = new AccessTokenDTO();
         accessTokenDTO.setClient_id("1aedee186d31295e9563");

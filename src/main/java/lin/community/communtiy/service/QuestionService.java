@@ -3,6 +3,7 @@ package lin.community.communtiy.service;
 import lin.community.communtiy.dto.PaginationDTO;
 import lin.community.communtiy.dto.QuestionDTO;
 import lin.community.communtiy.dto.QuestionQueryDTO;
+import lin.community.communtiy.enums.SortEnum;
 import lin.community.communtiy.exception.CustomizeErrorCode;
 import lin.community.communtiy.exception.CustomizeException;
 import lin.community.communtiy.mapper.QuestionExtMapper;
@@ -31,16 +32,40 @@ public class QuestionService {
     @Autowired
     private QuestionMapper questionMapper;
 
-    public PaginationDTO list(String search, Integer page, Integer size) {
+    public PaginationDTO list(String search, String tag, Integer page, Integer size, String sort) {
         if (StringUtils.isNotBlank(search)) {
-            String[] tags = StringUtils.split(search, " ");
-            search = Arrays.stream(tags).collect(Collectors.joining("|"));
+            String[] s = StringUtils.split(search, " ");
+            search = Arrays.
+                    stream(s)
+                    .filter(StringUtils::isNotBlank)
+                    .map(t -> t.replace("+","").replace("*","").replace("?",""))
+                    .filter(StringUtils::isNotBlank)
+                    .collect(Collectors.joining("|"));
         }
 
         PaginationDTO paginationDTO = new PaginationDTO();
         Integer totalPage;
         QuestionQueryDTO questionQueryDTO = new QuestionQueryDTO();
         questionQueryDTO.setSearch(search);
+        if (StringUtils.isNotBlank(tag)) {
+            tag.replace("+","").replace("*","").replace("?","");
+            questionQueryDTO.setTag(tag);
+        }
+
+        for (SortEnum sortEnum : SortEnum.values()) {
+            if (sortEnum.name().toLowerCase().equals(sort)){
+                questionQueryDTO.setSort(sort);
+
+                if (sortEnum == SortEnum.HOT7){
+                    questionQueryDTO.setTime(System.currentTimeMillis() - 1000L * 60 * 60 * 24 * 7);
+                }
+
+                if (sortEnum == SortEnum.HOT30){
+                    questionQueryDTO.setTime(System.currentTimeMillis() - 1000L * 60 * 60 * 24 * 30);
+                }
+            }
+        }
+
         Integer totalCount = questionEtcMapper.countBySearch(questionQueryDTO);
 
         if (totalCount % size == 0) {

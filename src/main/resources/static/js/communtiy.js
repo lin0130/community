@@ -72,7 +72,7 @@ function collapseComments(e) {
             e.classList.add("active");
         } else {
             $.getJSON("/comment/" + id, function (data) {
-                $.each(data.data.reverse(), function (index, comment) {
+                $.each(data.data.reverse(), function (index, comment) {//reverse()倒叙数组
 
                     var mediaLeftElement = $("<div/>", {
                         "class": "media-left"
@@ -118,19 +118,17 @@ function collapseComments(e) {
 
 }
 
-function showSelectTag()
-{
+function showSelectTag() {
     $("#select-tag").show();
 }
 
 function selectTag(e) {
     var value = e.getAttribute("data-tag");
     var previous = $("#tag").val();
-    if (previous.indexOf() == -1)
-    {
+    if (previous.indexOf() == -1) {
         if (previous) {
-            $("#tag").val(previous+','+value);
-        }else {
+            $("#tag").val(previous + ',' + value);
+        } else {
             $("#tag").val(value);
         }
     }

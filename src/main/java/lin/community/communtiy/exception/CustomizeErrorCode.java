@@ -29,9 +29,5 @@ public enum CustomizeErrorCode implements ICustomizeErrorCode {
         return code;
     }
 
-    CustomizeErrorCode(String message) {
-        this.message = message;
-    }
-
 
 }

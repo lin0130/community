@@ -10,7 +10,7 @@ public class NotificationDTO {
     private Long notifier;
     private String notifierName;
     private String outerTitle;
-    private String typeName;
+    private String  typeName;
     private Long outerid;
     private Integer type;
 }

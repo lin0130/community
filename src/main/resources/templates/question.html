@@ -29,16 +29,16 @@
                 作者：   <span th:text="${question.user.name}"></span> 丨
                 发布时间：   <span th:text="${#dates.format(question.gmtCreate)}"></span> 丨
                 阅读数  ：<span th:text="${question.viewCount}"></span>
-            </span>
+                </span>
                 <hr class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                 <!--内容-->
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" id="question-view">
                     <textarea style="display: none"  th:text="${question.description}"></textarea>
                 </div>
                 <script type="text/javascript">
-                    $(function () {
-                        editormd.markdownToHTML("question-view",{})
-                    });
+                        $(function () {
+                            editormd.markdownToHTML("question-view",{})
+                        });
                 </script>
                 <!--标签-->
                 <hr class="col-lg-12 col-md-12 col-sm-12 col-xs-12">

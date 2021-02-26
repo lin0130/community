@@ -1,4 +1,4 @@
-package Cache;
+package lin.community.communtiy.Cache;
 
 import lin.community.communtiy.dto.TagDTO;
 import org.apache.commons.lang3.StringUtils;
@@ -13,7 +13,7 @@ public class TagCache {
         List<TagDTO> tagDTOS = new ArrayList<>();
         TagDTO program = new TagDTO();
         program.setCategoryName("开发语言");
-        program.setTags(Arrays.asList("javascriptphp ", "css", "html", "html5", "java", "node", "js", "python", "c", "c", "golang", "objective", "typescript", "shell", "swift", "c", "sass", "ruby", "bash", "less", "asp", ".net", "lua", "scala", "coffeescript", "actionscript", "rust", "erlang", "perl"));
+        program.setTags(Arrays.asList("javascriptphp", "css", "html", "html5", "java", "node", "js", "python", "c", "c", "golang", "objective", "typescript", "shell", "swift", "c", "sass", "ruby", "bash", "less", "asp", ".net", "lua", "scala", "coffeescript", "actionscript", "rust", "erlang", "perl"));
         tagDTOS.add(program);
         TagDTO framework = new TagDTO();
         framework.setCategoryName("平台框架");
@@ -35,7 +35,7 @@ public class TagCache {
         return tagDTOS;
     }
 
-    public static String filterInvalid(String tags)
+    public static String  filterInvalid(String tags)
     {
         String[] split = StringUtils.split(tags, ",");
         List<TagDTO> tagDTOS = get();
