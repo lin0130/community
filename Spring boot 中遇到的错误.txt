@@ -22,9 +22,10 @@ idea Ctrl shift n 查找一个文件
 
 git init 的功能为初始化一个文件夹为本地仓库
 然后使用git status查看状态和是否存在.git文件
-仓库分为工作区 暂存区 提交区，文件夹即是工作区，现在我们新建一个空文件并使用git add <文件名>把它添加到暂存区
+仓库分为工作区 暂存区 提交区，文件夹即是工作区，现在我们新建一个空文件并使用git add <文件名>把它添加到暂存区（git add .）
 git commit -m "init repo"，最后我们使用git commit -m "注释"把它提交到版本库：
 使用git status 查看工作区，会发现变干净了
+git push
 
 创建远程仓库地址的别名git remote add origin https://github.com/lin0130/community.git
 git push -u origin master

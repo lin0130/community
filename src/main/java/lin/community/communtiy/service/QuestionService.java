@@ -207,4 +207,8 @@ public class QuestionService {
         }).collect(Collectors.toList());
         return questionDTOS;
     }
+
+    public void deleteQuestionById(Long id) {
+        questionMapper.deleteByPrimaryKey(id);
+    }
 }
