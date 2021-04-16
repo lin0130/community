@@ -45,6 +45,12 @@ public class ProfileController {
             model.addAttribute("section", "replies");
             model.addAttribute("paginationDTO", paginationDTO);
             model.addAttribute("sectionName", "最新回复");
+        } else if ("ilike".equals(action)){
+            model.addAttribute("section", "ilike");
+            model.addAttribute("sectionName", "我的收藏");
+            List<Long> questons = questionService.iLikes(user.getId());
+            PaginationDTO paginationDTO = questionService.list(questons, page, size);
+            model.addAttribute("paginationDTO", paginationDTO);
         }
 
         return "profile";

@@ -35,7 +35,7 @@ public class RegisterController {
 
         User user = new User();
         user.setName(name);
-        user.setPassWord(passWord);
+        user.setPassword(passWord);
         String token = UUID.randomUUID().toString();
         user.setToken(token);
         user.setAvatarUrl("https://avatars0.githubusercontent.com/u/59856442?v=4");

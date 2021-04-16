@@ -35,7 +35,7 @@ public class LoginController {
 
            if (users.size() != 0) {
                for (User user : users) {
-                   String pw = user.getPassWord();
+                   String pw = user.getPassword();
 //                   if (passWord == pw) {
                        String token = user.getToken();
                        servletResponse.addCookie(new Cookie("token", token));

@@ -1,9 +1,9 @@
 package lin.community.communtiy.controller;
 
-import lin.community.communtiy.dto.CommentDTO;
-import lin.community.communtiy.dto.PaginationDTO;
-import lin.community.communtiy.dto.QuestionDTO;
+import lin.community.communtiy.dto.*;
 import lin.community.communtiy.enums.CommentTypeEnum;
+import lin.community.communtiy.exception.CustomizeErrorCode;
+import lin.community.communtiy.model.Mylike;
 import lin.community.communtiy.model.User;
 import lin.community.communtiy.service.CommentService;
 import lin.community.communtiy.service.NotificationService;
@@ -11,8 +11,7 @@ import lin.community.communtiy.service.QuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -26,6 +25,7 @@ public class QuestionController {
 
     @Autowired
     private NotificationService notificationService;
+
 
     @GetMapping("/question/{id}")
     public String question(@PathVariable(name = "id") Long id,
@@ -48,6 +48,41 @@ public class QuestionController {
         User user = (User) servletRequest.getSession().getAttribute("user");
         PaginationDTO paginationDTO = notificationService.list(user.getId(), 1, 5);
         model.addAttribute("paginationDTO", paginationDTO);
+        return "profile";
+    }
+
+    @ResponseBody
+    @PostMapping("/ilike")
+    public ResultDTO ilike(@RequestBody IlikeDTO ilikeDTO, HttpServletRequest request) {
+        User user = (User) request.getSession().getAttribute("user");
+        Mylike mylike = new Mylike();
+        if (user == null) {
+            return ResultDTO.errorOf(CustomizeErrorCode.NO_LOGIN);
+        }
+        mylike.setUserid(user.getId());
+        mylike.setType(ilikeDTO.getType());
+        mylike.setQuestionid(ilikeDTO.getQuestionId());
+
+        int result = questionService.ilike(mylike);
+        if (result == 0) {
+            return ResultDTO.errorOf(2021, "您已经收藏了该问题");
+        }
+        return ResultDTO.okOf();
+    }
+
+    @GetMapping("/question/unlike/{id}")
+    public String unlike(@PathVariable(name = "id") Long questionId,
+                         HttpServletRequest request,
+                         Model model) {
+        if (questionId != null) {
+            questionService.unlike(questionId);
+        }
+        User user = (User) request.getSession().getAttribute("user");
+        List<Long> questions = questionService.iLikes(user.getId());
+        PaginationDTO paginationDTO = questionService.list(questions, 1, 5);
+        model.addAttribute("paginationDTO", paginationDTO);
+        model.addAttribute("section", "ilike");
+        model.addAttribute("sectionName", "我的收藏");
         return "profile";
     }
 

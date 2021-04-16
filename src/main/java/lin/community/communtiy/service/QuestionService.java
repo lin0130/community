@@ -6,12 +6,11 @@ import lin.community.communtiy.dto.QuestionQueryDTO;
 import lin.community.communtiy.enums.SortEnum;
 import lin.community.communtiy.exception.CustomizeErrorCode;
 import lin.community.communtiy.exception.CustomizeException;
+import lin.community.communtiy.mapper.MylikeMapper;
 import lin.community.communtiy.mapper.QuestionExtMapper;
 import lin.community.communtiy.mapper.QuestionMapper;
 import lin.community.communtiy.mapper.UserMapper;
-import lin.community.communtiy.model.Question;
-import lin.community.communtiy.model.QuestionExample;
-import lin.community.communtiy.model.User;
+import lin.community.communtiy.model.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.session.RowBounds;
 import org.springframework.beans.BeanUtils;
@@ -32,13 +31,39 @@ public class QuestionService {
     @Autowired
     private QuestionMapper questionMapper;
 
+    @Autowired
+    private MylikeMapper mylikeMapper;
+
+    public int ilike(Mylike mylike) {
+        MylikeExample example = new MylikeExample();
+        example.createCriteria().andQuestionidEqualTo(mylike.getQuestionid());
+        List<Mylike> mylikes = mylikeMapper.selectByExample(example);
+        //bug 应该是判断size list
+        if (mylikes.size() != 0) {
+            return 0;
+        } else {
+            mylikeMapper.insert(mylike);
+        }
+        return 1;
+    }
+
+    public List<Long> iLikes(Long userId) {
+        MylikeExample example = new MylikeExample();
+        example.createCriteria().andUseridEqualTo(userId);
+        List<Mylike> mylikes = mylikeMapper.selectByExample(example);
+        List<Long> likes = mylikes.stream().map(i -> {
+            return i.getQuestionid();
+        }).collect(Collectors.toList());
+        return likes;
+    }
+
     public PaginationDTO list(String search, String tag, Integer page, Integer size, String sort) {
         if (StringUtils.isNotBlank(search)) {
             String[] s = StringUtils.split(search, " ");
             search = Arrays.
                     stream(s)
                     .filter(StringUtils::isNotBlank)
-                    .map(t -> t.replace("+","").replace("*","").replace("?",""))
+                    .map(t -> t.replace("+", "").replace("*", "").replace("?", ""))
                     .filter(StringUtils::isNotBlank)
                     .collect(Collectors.joining("|"));
         }
@@ -48,19 +73,19 @@ public class QuestionService {
         QuestionQueryDTO questionQueryDTO = new QuestionQueryDTO();
         questionQueryDTO.setSearch(search);
         if (StringUtils.isNotBlank(tag)) {
-            tag.replace("+","").replace("*","").replace("?","");
+            tag.replace("+", "").replace("*", "").replace("?", "");
             questionQueryDTO.setTag(tag);
         }
 
         for (SortEnum sortEnum : SortEnum.values()) {
-            if (sortEnum.name().toLowerCase().equals(sort)){
+            if (sortEnum.name().toLowerCase().equals(sort)) {
                 questionQueryDTO.setSort(sort);
 
-                if (sortEnum == SortEnum.HOT7){
+                if (sortEnum == SortEnum.HOT7) {
                     questionQueryDTO.setTime(System.currentTimeMillis() - 1000L * 60 * 60 * 24 * 7);
                 }
 
-                if (sortEnum == SortEnum.HOT30){
+                if (sortEnum == SortEnum.HOT30) {
                     questionQueryDTO.setTime(System.currentTimeMillis() - 1000L * 60 * 60 * 24 * 30);
                 }
             }
@@ -144,6 +169,53 @@ public class QuestionService {
         return paginationDTO;
     }
 
+    public PaginationDTO list(List<Long> likes, Integer page, Integer size) {
+        PaginationDTO paginationDTO = new PaginationDTO();
+        Integer totalPage;
+        Integer totalCount;
+        //总数量就是收藏问题的数量
+        totalCount = likes.size();
+
+        if (totalCount % size == 0) {
+            totalPage = totalCount / size;
+        } else {
+            totalPage = totalCount / size + 1;
+        }
+
+        if (page > totalPage) {
+            page = totalPage;
+        }
+
+        if (page < 1) {
+            page = 1;
+        }
+
+        paginationDTO.setPagination(totalPage, page);
+
+        Integer offset = size * (page - 1);
+
+        List<QuestionDTO> questionDtoList = new ArrayList<>();
+        if (likes.size() != 0) {
+            QuestionExample example = new QuestionExample();
+            example.createCriteria().andIdIn(likes);
+            List<Question> questions = questionMapper.selectByExampleWithRowbounds(example, new RowBounds(offset, size));
+
+
+            for (Question question : questions) {
+                User user = userMapper.selectByPrimaryKey(question.getCreator());
+                QuestionDTO questionDto = new QuestionDTO();
+                BeanUtils.copyProperties(question, questionDto);//把question中的属性快速copy到questionDto中
+                questionDto.setUser(user);
+                questionDtoList.add(questionDto);
+            }
+
+            paginationDTO.setData(questionDtoList);
+        } else {
+            paginationDTO.setData(questionDtoList);
+        }
+        return paginationDTO;
+    }
+
     public QuestionDTO getById(Long id) {
         Question question = questionMapper.selectByPrimaryKey(id);
         if (question == null) {
@@ -210,5 +282,11 @@ public class QuestionService {
 
     public void deleteQuestionById(Long id) {
         questionMapper.deleteByPrimaryKey(id);
+    }
+
+    public void unlike(Long questionId) {
+        MylikeExample example = new MylikeExample();
+        example.createCriteria().andQuestionidEqualTo(questionId);
+        mylikeMapper.deleteByExample(example);
     }
 }
